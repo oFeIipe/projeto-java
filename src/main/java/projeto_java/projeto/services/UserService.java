@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import projeto_java.projeto.entidades.Usuario;
-import projeto_java.projeto.infra.ExceptionHandler;
+import projeto_java.projeto.infra.UserAlreadyExists;
 import projeto_java.projeto.repositories.UserRepository;
 
 import java.util.Optional;
@@ -19,7 +19,14 @@ public class UserService {
     private Usuario usuarioLogado;
 
     public Usuario register(Usuario usuario) {
+        if(jaExisteUsuario(usuario.getEmail())){
+            throw new UserAlreadyExists();
+        }
         return userRepository.save(usuario);
+    }
+
+    public boolean jaExisteUsuario(String email){
+        return userRepository.findByEmail(email).isPresent();
     }
 
     public boolean login(String email, String password){

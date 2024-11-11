@@ -6,10 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import projeto_java.projeto.dto.LoginDTO;
 import projeto_java.projeto.entidades.Usuario;
-import projeto_java.projeto.infra.ExceptionHandler;
 import projeto_java.projeto.repositories.UserRepository;
 import projeto_java.projeto.services.UserService;
-
 import java.util.List;
 
 @RestController
@@ -29,10 +27,6 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<Usuario> register(@RequestBody Usuario user) {
-
-        //if (userRepository.findByEmail(user.getUsername()).isPresent()) {
-        //    throw new ExceptionHandler("Usuário já existente");
-        //}
         Usuario novoUsuario = userService.register(user);
         return new ResponseEntity<>(novoUsuario, HttpStatus.CREATED);
 
@@ -51,8 +45,6 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<String> logOut(){
         userService.logOut();
-        return ResponseEntity.ok("LogOut feito com sucesso");
+        return ResponseEntity.ok("Logout feito com sucesso");
     }
-
-
 }

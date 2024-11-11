@@ -3,16 +3,13 @@ package projeto_java.projeto.controllers;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import projeto_java.projeto.dto.PostDTO;
 import projeto_java.projeto.entidades.Post;
 import projeto_java.projeto.entidades.Usuario;
-import projeto_java.projeto.infra.ExceptionHandler;
 import projeto_java.projeto.repositories.PostRepository;
-import projeto_java.projeto.repositories.UserRepository;
 import projeto_java.projeto.services.PostService;
 import projeto_java.projeto.services.UserService;
 
@@ -40,8 +37,6 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Faça login para poder fazer postagens!");
         }
 
-
-
         post.setUsuario(usuarioLogado);
         Post novoPost = postService.createPost(post);
         return new ResponseEntity<>(novoPost, HttpStatus.CREATED);
@@ -55,18 +50,32 @@ public class PostController {
     @PutMapping
     @Transactional
     public ResponseEntity editPost(@RequestBody PostDTO post){
-        Usuario usuarioLogado = userService.getUsuarioLogado();
-        if(usuarioLogado == null){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Faça login para poder editar postagens!");
-        }
 
+        Usuario usuarioLogado = userService.getUsuarioLogado();
         Optional<Post> optionalPost = postRepository.findById(post.id());
-        if (optionalPost.isPresent()) {
-            Post postEditado = optionalPost.get();
-            postEditado.setConteudo(post.conteudo());
-            return ResponseEntity.ok(post);
-        } else {
-            throw new EntityNotFoundException();
+
+        if(usuarioLogado == null || (optionalPost.isPresent() && !(optionalPost.get().getUsuario().getId().equals(usuarioLogado.getId())))){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ação não autorizada");
         }
+            if (optionalPost.isPresent()) {
+                Post postEditado = optionalPost.get();
+                postEditado.setConteudo(post.conteudo());
+                return ResponseEntity.ok(post);
+            } else {
+                throw new EntityNotFoundException();
+            }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deletePost(@PathVariable String id){
+
+        Usuario usuarioLogado = userService.getUsuarioLogado();
+        Optional<Post> optionalPost = postRepository.findById(id);
+
+        if(usuarioLogado == null || (optionalPost.isPresent() && !(optionalPost.get().getUsuario().getId().equals(usuarioLogado.getId())))){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Ação não autorizada");
+        }
+        postRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
