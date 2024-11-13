@@ -11,7 +11,7 @@ import projeto_java.projeto.services.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("api/user")
 public class UserController {
 
     @Autowired
@@ -20,7 +20,7 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping("/get")
+    @GetMapping()
     public ResponseEntity <List<Usuario>> getAllUsers(){
         return ResponseEntity.ok(userRepository.findAll());
     }
