@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Language" content="pt">
+    <meta name="language" content="Portuguese">
+    <title>LOGIN PAGE</title>
+    <link rel="stylesheet" href="style..css">
+    <script>
+        function register() {
+            let usr =  document.getElementById('user_box').value;
+            let pass = document.getElementById('pass_box').value;
+            let email = document.getElementById('email_box').value;
+
+            console.log("user -> " + usr);
+            console.log("pass -> " + pass);
+            console.log("email -> " + email);
+
+            fetch("/api/user/register", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json' // Set the Content-Type to JSON
+                    },
+                    body: JSON.stringify({ email: email, password: pass, username: usr })
+            })
+            .then(data => {
+                console.log(data);
+                window.location.replace("/");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</head>
+<body>
+<section id="login-sec">
+    <div class="login-box">
+        <h2>LOGO</h2>
+        <div class="textbox_user">
+            <input id='user_box' type="text" name="username" placeholder="Username" required style="color: whitesmoke;">
+        </div>
+        <div class="textbox_email">
+            <input id='email_box' type="text" name="e-mail" placeholder="E-mail" required style="color: whitesmoke;">
+        </div>
+        <div class="textbox_pass">
+            <input id='pass_box' type="password" name="password" placeholder="Password" required style="color: whitesmoke;">
+        </div>
+        <input type="submit" class="btn_login" value="Register" onclick="register()">
+</section>
+</body>
+</html>
